@@ -1,0 +1,49 @@
+function [gsvd, redu] = redu_reinit_svd(redu_def, gsvd, sample)
+% Reinitialize the reduced subspace
+% Tiangang Cui, 01/Oct/2013
+
+
+
+c2p             = pre_process(prior, param, in, true);
+hessinfo        = forward_solve(forward, c2p.x);
+hessinfo.dxdu   = c2p.dxdu;
+hessinfo.dx2du2 = c2p.dx2du2;
+hessinfo.grad_p = c2p.grad_p;
+
+% Jacobian
+[J.U, J.S, J.V] = adjoint_jacobian_dec(mesh, obs, prior, param, forward, hessinfo);
+
+
+switch redu_def.hess_type
+    case {'PM'}
+        [V_locp, d_locp] = redu_def.generalized_eigen(sample, redu_def.eigen_tol, redu_def.eigen_Nmax);
+        [V_locm, d_locm] = redu_def.generalized_eigen(sample, redu_def.eigen_tol, -redu_def.eigen_Nmax);
+        % assmeble the global SVD
+        Vmat = [scale_cols(gsvd.V, gsvd.S)*sqrt(gsvd.n_sample), scale_cols(V_locp, sqrt(d_locp)), scale_cols(V_locm, sqrt(d_locm))];
+    otherwise
+        [V_locp, d_locp] = redu_def.generalized_eigen(sample, redu_def.eigen_tol, redu_def.eigen_Nmax);
+        % assmeble the global SVD
+        Vmat = [scale_cols(gsvd.V, gsvd.S)*sqrt(gsvd.n_sample), scale_cols(V_locp, sqrt(d_locp))];
+end
+% global SVD
+[V_glo, S_glo] = svd(Vmat/sqrt(gsvd.n_sample+1),'econ');
+% update basis sample vector
+d_glo  = diag(S_glo);
+ind    = (d_glo>=redu_def.gsvd_tol);
+gsvd.V = V_glo(:,ind);
+gsvd.S = d_glo(ind);
+gsvd.n_sample = gsvd.n_sample + 1;
+
+% update the reduced space
+% using energy
+if redu_def.gsvd_use_energy
+    ind_trunc = ( cumsum(gsvd.S.^2)/sum(gsvd.S.^2) ) < redu_def.gsvd_trunc_tol;
+else
+    ind_trunc = gsvd.S >= redu_def.gsvd_trunc_tol;
+end
+
+redu.DoF = sum(ind_trunc);
+redu.P   = gsvd.V(:,ind_trunc); 
+redu.S   = gsvd.S(ind_trunc);
+
+end
