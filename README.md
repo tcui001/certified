@@ -2,6 +2,8 @@
 
 The purpose of this repository is to demonstrate the numerical examples of the manuscript [ZCLSM]. A part of the code used in this repository is outdated. The latest FastFInS package and many relevant functionality can be found at https://github.com/fastfins/fastfins.m, which will soon be released. 
 
+The authors acknowledge the support from Marko Laine in setting up the GOMOS model. The GOMOS data was provided by Finnish Meteorological Institute, the details of the instrument can be found at https://earth.esa.int/eogateway/instruments/gomos. This model is also used in [HLLST04]. 
+
 # For the GOMOS example (Section 5.1)
 
 0. Run `load_dir.m` to load other code needed. 
@@ -23,4 +25,6 @@ For the iterative algorithm (Alg. 2), we can run the file `run_iter_redu_driver.
 
 [ZCLSM] O. Zahm, T. Cui, K. Law, A. Spantini and Y. Marzouk. `Certified dimension reduction in nonlinear Bayesian inverse problems`. https://arxiv.org/abs/1807.03712. 
 
-[CKM16] T. Cui, K. Law and Y. Marzouk. `Dimension-independent likelihood-informed MCMC.` Journal of Computational Physics 304 (1), 109-137.
+[CKM16] T. Cui, K. Law and Y. Marzouk. `Dimension-independent likelihood-informed MCMC.` Journal of Computational Physics 304 (1), (2016): 109-137.
+
+[HLLST04] H. Haario, M. Laine, M. Lehtinen, E. Saksman and J. Tamminen. `Markov chain Monte Carlo methods for high dimensional inversion in remote sensing.` Journal of the Royal Statistical Society: series B (statistical methodology), 66 (3), (2004): 591-607.
